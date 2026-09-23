@@ -18,9 +18,12 @@ jobs:
         run: |
           Invoke-WebRequest -Uri "https://raw.githubusercontent.com/FuturisticGoo/portable_python/main/py_distros/python_3.4_wpsw.zip" -OutFile "$env:TEMP\python34.zip"
           7z x "$env:TEMP\python34.zip" -opy34 -y | Out-Null
-          if (!(Test-Path ".\py34\python.exe")) { throw "Portable Python 3.4 extraction failed" }
-          .\py34\python.exe --version
-          .\py34\python.exe -c "import struct; b=open('py34\\python.exe','rb').read(); pe=struct.unpack_from('<I',b,0x3c)[0]; print('Python machine=',hex(struct.unpack_from('<H',b,pe+4)[0]))"
+          $py = Get-ChildItem ".\py34" -Recurse -Filter "python.exe" | Select-Object -First 1
+          if ($null -eq $py) { 7z l "$env:TEMP\python34.zip"; throw "Portable Python 3.4 extraction failed: python.exe not found" }
+          $py34 = $py.FullName
+          & $py34 --version
+          & $py34 -c "import struct,sys; b=open(sys.executable,'rb').read(); pe=struct.unpack_from('<I',b,0x3c)[0]; print('Python machine=',hex(struct.unpack_from('<H',b,pe+4)[0]))"
+          Set-Content -Path py34_path.txt -Value $py34
 
       - name: Bootstrap pip and install XP-era dependencies
         shell: powershell
