@@ -1,8 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
-PyInstaller .spec for print_server2.6 (最全依赖版)
 
-本 spec 文件已补全所有常用和可能用到的依赖，适配 Win7/Win10/Win11，确保打包后无缺失。
 """
 
 import os
@@ -26,8 +24,6 @@ hiddenimports = [
     'wmi',
     'ctypes',
     'ctypes.wintypes',
-    'pysnmp',
-    'pysnmp.hlapi',
     'requests',
     'requests_toolbelt',
     'urllib3',
@@ -49,7 +45,6 @@ hiddenimports = [
     'PIL.ImageDraw',
     'PIL.ImageFont',
     'PIL.ImageOps',
-    # print_server2.6.py 第34行实际运行时需要的第三方 parse 模块
     'parse',
 ]
 hiddenimports += collect_submodules('pystray') if os.path.isdir(os.path.join(pathex[0], 'pystray')) else []
