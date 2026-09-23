@@ -1,0 +1,52 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches:
+      - "2.6"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.7.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.7.9"
+
+      - name: Install dependencies
+        shell: cmd
+        run: |
+          python -m pip install --upgrade "pip<24.1"
+          python -m pip install "PyInstaller==5.13.2"
+          python -m pip install flask flask_cors werkzeug requests requests_toolbelt pysnmp pystray pillow comtypes pywin32 wmi waitress certifi chardet pdf2image
+
+      - name: Extract Poppler
+        shell: cmd
+        run: |
+          7z x poppler.rar -y
+          if not exist "poppler\Library\bin" (
+            echo ERROR: poppler\Library\bin was not found after extraction.
+            exit /b 1
+          )
+
+      - name: Build EXE
+        shell: cmd
+        run: |
+          python -m PyInstaller --clean --noconfirm print_server2.6.spec
+
+      - name: Package
+        shell: powershell
+        run: |
+          Compress-Archive -Path "dist\print_server2.6\*" -DestinationPath "lan-printing-2.6-XP-upload-fix.zip" -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lan-printing-2.6-XP-upload-fix
+          path: lan-printing-2.6-XP-upload-fix.zip
+          if-no-files-found: error
