@@ -3869,12 +3869,26 @@ function initFileDragDrop() {
     }
     
     function updateFileInput() {
-        // 创建新的文件列表
-        const dt = new DataTransfer();
-        currentFiles.forEach(file => {
-            dt.items.add(file);
-        });
-        fileInput.files = dt.files;
+        // 兼容 WinXP/旧版浏览器：DataTransfer 和 input.files 赋值并非所有浏览器都支持。
+        // 原生 file input 已经包含用户实际选择的文件时，不强制重建 FileList，避免上传失败。
+        try {
+            if (typeof DataTransfer === 'undefined') {
+                return;
+            }
+            const dt = new DataTransfer();
+            currentFiles.forEach(function(file) {
+                if (dt.items && typeof dt.items.add === 'function') {
+                    dt.items.add(file);
+                }
+            });
+            try {
+                fileInput.files = dt.files;
+            } catch (assignError) {
+                console.warn('当前浏览器不支持设置 input.files，保留原生文件选择结果:', assignError);
+            }
+        } catch (e) {
+            console.warn('DataTransfer 不可用，使用原生文件输入:', e);
+        }
     }
     
     function formatFileSize(bytes) {
@@ -8273,7 +8287,12 @@ def upload_file():
                     total_files += 1
                     
                     # 确保文件名唯一，避免覆盖
-                    filename = f.filename
+                    # 兼容 WinXP/旧版浏览器可能提交完整本地路径的情况，只保留文件名
+                    raw_filename = f.filename or ''
+                    filename = raw_filename.replace('\\', '/').split('/')[-1].strip()
+                    if not filename:
+                        flash(" 文件名为空，请重新选择要打印的文件！", "danger")
+                        continue
                     filepath = os.path.join(UPLOAD_FOLDER, filename)
                     counter = 1
                     max_attempts = 100
