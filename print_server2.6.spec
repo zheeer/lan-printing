@@ -7,10 +7,6 @@ PyInstaller .spec for print_server2.6 (最全依赖版)
 
 import os
 from PyInstaller.utils.hooks import collect_submodules
-from PyInstaller.utils.hooks import collect_dynamic_libs
-from PyInstaller.utils.hooks import collect_data_files
-from PyInstaller.utils.hooks import copy_metadata
-# Tree helper removed for compatibility; binaries collected manually below
 
 block_cipher = None
 
@@ -53,6 +49,8 @@ hiddenimports = [
     'PIL.ImageDraw',
     'PIL.ImageFont',
     'PIL.ImageOps',
+    # print_server2.6.py 第34行实际运行时需要的第三方 parse 模块
+    'parse',
 ]
 hiddenimports += collect_submodules('pystray') if os.path.isdir(os.path.join(pathex[0], 'pystray')) else []
 
@@ -78,7 +76,6 @@ add_if_exists(os.path.join('.', 'bootstrap.bundle.min.js'), '.')
 
 poppler_dir = os.path.join('.', 'poppler', 'Library', 'bin')
 
-# 收集 poppler bin 下所有文件作为 binaries（放到运行时的 poppler_bin 目录）
 poppler_binaries = []
 if os.path.isdir(poppler_dir):
     for root, _, files in os.walk(poppler_dir):
