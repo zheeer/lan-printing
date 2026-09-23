@@ -13,13 +13,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Python 3.4.4 x64
+      - name: Install portable Python 3.4 x86
         shell: powershell
         run: |
-          Invoke-WebRequest -Uri "https://mirrors.huaweicloud.com/python/3.4.4/python-3.4.4.amd64.msi" -OutFile "$env:TEMP\python34.msi"
-          Start-Process msiexec.exe -ArgumentList '/a "$env:TEMP\python34.msi" /qn TARGETDIR="$PWD\py34"' -Wait -NoNewWindow
-          if (!(Test-Path ".\py34\python.exe")) { throw "Python 3.4.4 extraction failed" }
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/FuturisticGoo/portable_python/main/py_distros/python_3.4_wpsw.zip" -OutFile "$env:TEMP\python34.zip"
+          7z x "$env:TEMP\python34.zip" -opy34 -y | Out-Null
+          if (!(Test-Path ".\py34\python.exe")) { throw "Portable Python 3.4 extraction failed" }
           .\py34\python.exe --version
+          .\py34\python.exe -c "import struct; b=open('py34\\python.exe','rb').read(); pe=struct.unpack_from('<I',b,0x3c)[0]; print('Python machine=',hex(struct.unpack_from('<H',b,pe+4)[0]))"
 
       - name: Bootstrap pip and install XP-era dependencies
         shell: powershell
@@ -51,11 +52,11 @@ jobs:
       - name: Package
         shell: powershell
         run: |
-          Compress-Archive -Path "dist\print_server2.6\*" -DestinationPath "lan-printing-2.6-XP-legacy-x64.zip" -Force
+          Compress-Archive -Path "dist\print_server2.6\*" -DestinationPath "lan-printing-2.6-XP-legacy-x86.zip" -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: lan-printing-2.6-XP-legacy-x64
+          name: lan-printing-2.6-XP-legacy-x86
           path: lan-printing-2.6-XP-legacy-x64.zip
           if-no-files-found: error
