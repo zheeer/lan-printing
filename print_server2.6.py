@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: future_fstrings -*-
 #作者：忆痕
 #仓库地址：https://github.com/a937750307/lan-printing
  
