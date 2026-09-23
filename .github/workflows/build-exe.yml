@@ -16,7 +16,7 @@ jobs:
       - name: Install Python 3.4.4 x64
         shell: powershell
         run: |
-          Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.4.4/python-3.4.4.amd64.msi" -OutFile "$env:TEMP\python34.msi"
+          Invoke-WebRequest -Uri "https://mirrors.huaweicloud.com/python/3.4.4/python-3.4.4.amd64.msi" -OutFile "$env:TEMP\python34.msi"
           Start-Process msiexec.exe -ArgumentList '/a "$env:TEMP\python34.msi" /qn TARGETDIR="$PWD\py34"' -Wait -NoNewWindow
           if (!(Test-Path ".\py34\python.exe")) { throw "Python 3.4.4 extraction failed" }
           .\py34\python.exe --version
