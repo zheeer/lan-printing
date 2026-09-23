@@ -13,12 +13,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Python 3.4.10 x64
+      - name: Install Python 3.4.4 x64
         shell: powershell
         run: |
-          Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.4.10/python-3.4.10.amd64.msi" -OutFile "$env:TEMP\python34.msi"
+          Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.4.4/python-3.4.4.amd64.msi" -OutFile "$env:TEMP\python34.msi"
           7z x "$env:TEMP\python34.msi" -opy34 -y | Out-Null
-          if (!(Test-Path ".\py34\python.exe")) { throw "Python 3.4.10 extraction failed" }
+          if (!(Test-Path ".\py34\python.exe")) { throw "Python 3.4.4 extraction failed" }
           .\py34\python.exe --version
 
       - name: Bootstrap pip and install XP-era dependencies
