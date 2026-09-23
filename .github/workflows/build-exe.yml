@@ -17,7 +17,7 @@ jobs:
         shell: powershell
         run: |
           Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.4.4/python-3.4.4.amd64.msi" -OutFile "$env:TEMP\python34.msi"
-          7z x "$env:TEMP\python34.msi" -opy34 -y | Out-Null
+          Start-Process msiexec.exe -ArgumentList '/a "$env:TEMP\python34.msi" /qn TARGETDIR="$PWD\py34"' -Wait -NoNewWindow
           if (!(Test-Path ".\py34\python.exe")) { throw "Python 3.4.4 extraction failed" }
           .\py34\python.exe --version
 
