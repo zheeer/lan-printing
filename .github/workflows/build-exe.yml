@@ -47,6 +47,7 @@ jobs:
         shell: powershell
         run: |
           $py34 = Get-Content py34_path.txt
+          $env:XP_SKIP_POPPLER = "1"
           & $py34 -m PyInstaller --clean --noconfirm print_server2.6.spec
 
 
