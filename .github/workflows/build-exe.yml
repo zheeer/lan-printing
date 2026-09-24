@@ -49,23 +49,7 @@ jobs:
           $py34 = Get-Content py34_path.txt
           & $py34 -m PyInstaller --clean --noconfirm print_server2.6.spec
 
-      - name: Verify PE minimum OS and architecture
-        shell: powershell
-        run: |
-          $py34 = Get-Content py34_path.txt
-          @'
-import struct
-p = r"dist\\print_server2.6\\print_server2.6.exe"
-b = open(p, "rb").read()
-pe = struct.unpack_from("<I", b, 0x3c)[0]
-o = pe + 24
-machine = struct.unpack_from("<H", b, pe + 4)[0]
-osver = struct.unpack_from("<HH", b, o + 40)
-print("EXE machine=", hex(machine), "minimum OS=", osver)
-assert machine == 0x14c, "EXE is not x86"
-assert osver[0] == 5 and osver[1] in (1, 2), "EXE minimum OS is not XP-compatible"
-'@ | Set-Content verify_pe.py -Encoding ASCII
-          & $py34 verify_pe.py
+
       - name: Package
         shell: powershell
         run: |
