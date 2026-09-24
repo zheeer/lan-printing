@@ -72,7 +72,7 @@ add_if_exists(os.path.join('.', 'bootstrap.bundle.min.js'), '.')
 poppler_dir = os.path.join('.', 'poppler', 'Library', 'bin')
 
 poppler_binaries = []
-if os.path.isdir(poppler_dir):
+if os.environ.get('XP_SKIP_POPPLER') != '1' and os.path.isdir(poppler_dir):
     for root, _, files in os.walk(poppler_dir):
         for f in files:
             full = os.path.join(root, f)
